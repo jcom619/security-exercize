@@ -1,6 +1,7 @@
-const express = require('express')
-const cors = require('cors')
-const helmet = require('helmet')
+const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+const helmet = require('helmet');
 var winston = require('winston');
 
 const bodyParser = require('body-parser');
@@ -8,8 +9,16 @@ const app = express()
 app.use(cors())
 app.use(helmet())
 app.use(bodyParser.json())
+app.use(morgan('tiny'))
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => {
+  res.cookie('session', '1', {httpOnly: true})
+  res.cookie('session', '1', {secure: true})
+  res.set({
+    'Content-Security-Policy': "script-src 'self' 'https://apis.google.com'"
+  })
+  res.send('HiMundo!')
+});
 
 app.post('/secret', (req, res) => {
   const { userInput } = req.body;
